@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智巷织补 - App原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+        }
+        
+        .phone-container {
+            width: 393px;
+            height: 852px;
+            background: #000;
+            border-radius: 47px;
+            padding: 8px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 39px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 47px;
+            background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .content-area {
+            height: calc(100% - 47px - 83px);
+            overflow-y: auto;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 0.5px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: flex-start;
+            padding-top: 8px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+        }
+        
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .page {
+            display: none;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .hero-banner {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        
+        .function-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .function-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .function-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .function-card i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #007AFF;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ar-viewfinder {
+            position: relative;
+            height: 100%;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scan-area {
+            width: 280px;
+            height: 280px;
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { border-color: #00ff88; }
+            50% { border-color: rgba(0,255,136,0.5); }
+            100% { border-color: #00ff88; }
+        }
+        
+        .scan-corners {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .scan-corners::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: #00ff88;
+        }
+        
+        .scan-corners::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 100%;
+            background: #00ff88;
+        }
+        
+        .corner-tl { top: -2px; left: -2px; }
+        .corner-tr { top: -2px; right: -2px; }
+        .corner-bl { bottom: -2px; left: -2px; }
+        .corner-br { bottom: -2px; right: -2px; }
+        
+        .corner-tr::before { right: 0; }
+        .corner-tr::after { right: 0; }
+        .corner-bl::before { bottom: 0; }
+        .corner-bl::after { bottom: 0; }
+        .corner-br::before { bottom: 0; right: 0; }
+        .corner-br::after { bottom: 0; right: 0; }
+        
+        .ar-info-card {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            transform: translateY(100px);
+            animation: slideUp 0.5s ease forwards;
+        }
+        
+        @keyframes slideUp {
+            to { transform: translateY(0); }
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .service-item:hover {
+            transform: scale(0.95);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #007AFF;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #007AFF;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="phone-container">
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span>9:41</span>
+                <div class="flex items-center space-x-1">
+                    <i class="fas fa-signal text-sm"></i>
+                    <i class="fas fa-wifi text-sm"></i>
+                    <i class="fas fa-battery-three-quarters text-sm"></i>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page 1: 首页 -->
+                <div id="home" class="page active">
+                    <!-- Hero Section -->
+                    <div class="hero-banner">
+                        <div class="hero-content">
+                            <h1 class="text-2xl font-bold mb-2">智巷织补</h1>
+                            <p class="text-sm opacity-90">连接文昌阁的过去、现在与未来</p>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-full p-2">
+                                <i class="fas fa-qrcode text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Core Functions -->
+                    <div class="function-grid">
+                        <div class="function-card" onclick="showPage('culture')">
+                            <i class="fas fa-landmark"></i>
+                            <h3 class="font-semibold text-sm mt-2">"织"览古今</h3>
+                            <p class="text-xs text-gray-600 mt-1">文化体验</p>
+                        </div>
+                        <div class="function-card" onclick="showPage('service')">
+                            <i class="fas fa-home"></i>
+                            <h3 class="font-semibold text-sm mt-2">"补"益生活</h3>
+                            <p class="text-xs text-gray-600 mt-1">社区服务</p>
+                        </div>
+                        <div class="function-card" onclick="showPage('community')">
+                            <i class="fas fa-users"></i>
+                            <h3 class="font-semibold text-sm mt-2">共"织"未来</h3>
+                            <p class="text-xs text-gray-600 mt-1">社区共建</p>
+                        </div>
+                    </div>
+                    
+                    <!-- AR Scan Button -->
+                    <div class="px-20 mb-4">
+                        <button onclick="showPage('ar')" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-2xl font-semibold flex items-center justify-center space-x-2">
+                            <i class="fas fa-camera"></i>
+                            <span>AR探索历史</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Community Updates -->
+                    <div class="px-4 pb-4">
+                        <h3 class="font-semibold text-lg mb-3 px-4">社区动态</h3>
+                        
+                        <div class="activity-card">
+                            <div class="tag">今日热点</div>
+                            <h4 class="font-semibold mb-2">文昌阁广场改造工程启动</h4>
+                            <p class="text-sm text-gray-600 mb-2">社区将对文昌阁广场进行微更新改造，增设休闲座椅和绿化景观...</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>2小时前</span>
+                                <span class="ml-auto">126人关注</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-card">
+                            <div class="tag">活动推荐</div>
+                            <h4 class="font-semibold mb-2">周末亲子手工坊</h4>
+                            <p class="text-sm text-gray-600 mb-2">本周六下午2点，社区活动中心举办传统织布体验活动...</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>社区活动中心</span>
+                                <span class="ml-auto text-blue-500">立即报名</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Page 2: 织览古今 -->
+                <div id="culture" class="page">
+                    <div class="bg-gradient-to-br from-amber-100 to-orange-100 h-48 relative">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop" 
+                             alt="文昌阁历史风貌" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end">
+                            <div class="p-6 text-white">
+                                <h2 class="text-2xl font-bold mb-2">穿越时光 探寻文昌</h2>
+                                <p class="text-sm opacity-90">让历史在AR中重现</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <!-- AR导览入口 -->
+                        <div class="bg-gradient-to-r from-purple-500 to-blue-600 rounded-2xl p-6 mb-6 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-bold text-lg mb-2">AR实境导览</h3>
+                                    <p class="text-sm opacity-90">扫一扫，穿越古今</p>
+                                </div>
+                                <button onclick="showPage('ar')" class="bg-white bg-opacity-20 rounded-full p-4">
+                                    <i class="fas fa-camera text-2xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 历史印记 -->
+                        <div class="mb-6">
+                            <h3 class="font-bold text-lg mb-4">历史印记</h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1464207687429-7505649dae38?w=200&h=120&fit=crop" 
+                                         alt="老照片" class="w-full h-24 object-cover">
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm">1920年代街景</h4>
+                                        <p class="text-xs text-gray-600 mt-1">15张照片</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=200&h=120&fit=crop" 
+                                         alt="建筑" class="w-full h-24 object-cover">
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm">传统建筑</h4>
+                                        <p class="text-xs text-gray-600 mt-1">8个建筑</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 主题路线 -->
+                        <div class="mb-6">
+                            <h3 class="font-bold text-lg mb-4">主题路线</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-building text-blue-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold mb-1">百年公馆寻踪</h4>
+                                            <p class="text-sm text-gray-600 mb-2">探访文昌阁片区的历史公馆建筑</p>
+                                            <div class="flex items-center text-xs text-gray-500">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                <span>约2小时</span>
+                                                <span class="mx-2">·</span>
+                                                <span>6个景点</span>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-500 text-sm font-medium">开始</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-industry text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold mb-1">工业遗迹漫步</h4>
+                                            <p class="text-sm text-gray-600 mb-2">感受老厂房改造的创意空间</p>
+                                            <div class="flex items-center text-xs text-gray-500">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                <span>约1.5小时</span>
+                                                <span class="mx-2">·</span>
+                                                <span>4个景点</span>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-500 text-sm font-medium">开始</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 互动模块 -->
+                        <div class="bg-amber-50 rounded-xl p-4">
+                            <h3 class="font-semibold mb-3 flex items-center">
+                                <i class="fas fa-comments text-amber-600 mr-2"></i>
+                                我说文昌阁
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-3">分享您与文昌阁的故事和回忆</p>
+                            <button class="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                上传故事
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Page 3: 补益生活 -->
+                <div id="service" class="page">
+                    <div class="bg-green-50 p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">便民服务</h2>
+                        <p class="text-gray-600">让社区生活更便捷</p>
+                    </div>
+                    
+                    <!-- 常用服务 -->
+                    <div class="service-grid">
+                        <div class="service-item">
+                            <i class="fas fa-car text-2xl text-blue-600 mb-2"></i>
+                            <span class="text-sm font-medium">智慧停车</span>
+                            <span class="text-xs text-gray-500 mt-1">23个空位</span>
+                        </div>
+                        
+                        <div class="service-item">
+                            <i class="fas fa-map-marked-alt text-2xl text-green-600 mb-2"></i>
+                            <span class="text-sm font-medium">设施查找</span>
+                            <span class="text-xs text-gray-500 mt-1">附近设施</span>
+                        </div>
+                        
+                        <div class="service-item">
+                            <i class="fas fa-tools text-2xl text-orange-600 mb-2"></i>
+                            <span class="text-sm font-medium">社区报修</span>
+                            <span class="text-xs text-gray-500 mt-1">一键报修</span>
+                        </div>
+                        
+                        <div class="service-item">
+                            <i class="fas fa-credit-card text-2xl text-purple-600 mb-2"></i>
+                            <span class="text-sm font-medium">生活缴费</span>
+                            <span class="text-xs text-gray-500 mt-1">在线缴费</span>
+                        </div>
+                        
+                        <div class="service-item">
+                            <i class="fas fa-file-alt text-2xl text-red-600 mb-2"></i>
+                            <span class="text-sm font-medium">办事指南</span>
+                            <span class="text-xs text-gray-500 mt-1">流程查询</span>
+                        </div>
+                        
+                        <div class="service-item">
+                            <i class="fas fa-heartbeat text-2xl text-pink-600 mb-2"></i>
+                            <span class="text-sm font-medium">健康驿站</span>
+                            <span class="text-xs text-gray-500 mt-1">预约服务</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 服务地图 -->
+                    <div class="mx-4 mb-6">
+                        <h3 class="font-bold text-lg mb-3">附近设施</h3>
+                        <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                            <div class="h-40 bg-gray-100 relative">
+                                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&h=200&fit=crop" 
+                                     alt="社区地图" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-white rounded-full p-3 shadow-lg">
+                                        <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="flex items-center text-gray-600">
+                                        <i class="fas fa-circle text-green-500 mr-2 text-xs"></i>
+                                        口袋公园 (2个)
+                                    </span>
+                                    <span class="flex items-center text-gray-600">
+                                        <i class="fas fa-circle text-blue-500 mr-2 text-xs"></i>
+                                        充电桩 (5个)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 社区服务站 -->
+                    <div class="mx-4 mb-6">
+                        <h3 class="font-bold text-lg mb-3">社区服务站</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold">物业公告</h4>
+                                    <span class="text-xs text-gray-500">今天</span>
+                                </div>
+                                <p class="text-sm text-gray-600">关于小区绿化提升工程的通知</p>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <h4 class="font-semibold mb-2">便民电话</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">物业服务</span>
+                                        <span class="text-blue-600">400-123-4567</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">社区医院</span>
+                                        <span class="text-blue-600">025-8765-4321</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Page 4: 共织未来 -->
+                <div id="community" class="page">
+                    <div class="bg-purple-50 p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">社区共建</h2>
+                        <p class="text-gray-600">参与塑造我们的美好家园</p>
+                    </div>
+                    
+                    <!-- 街巷议事厅 -->
+                    <div class="mx-4 mb-6">
+                        <h3 class="font-bold text-lg mb-3">街巷议事厅</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="tag">热门讨论</div>
+                                    <span class="text-xs text-gray-500">3天后截止</span>
+                                </div>
+                                <h4 class="font-semibold mb-2">文昌广场健身器材配置方案</h4>
+                                <p class="text-sm text-gray-600 mb-3">社区计划在文昌广场增设健身器材，请大家投票选择合适的配置方案...</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <i class="fas fa-users mr-1"></i>
+                                        <span>156人参与</span>
+                                    </div>
+                                    <button class="bg-purple-500 text-white px-3 py-1 rounded-lg text-xs">
+                                        参与投票
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="tag">征集意见</div>
+                                    <span class="text-xs text-gray-500">1周后截止</span>
+                                </div>
+                                <h4 class="font-semibold mb-2">停车位规划优化建议</h4>
+                                <p class="text-sm text-gray-600 mb-3">针对小区停车难问题，现征集大家的意见和建议...</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        <span>89条建议</span>
+                                    </div>
+                                    <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs">
+                                        提建议
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 bg-purple-100 text-purple-700 py-3 rounded-xl font-medium">
+                            <i class="fas fa-plus mr-2"></i>
+                            我有话说
+                        </button>
+                    </div>
+                    
+                    <!-- 活动日历 -->
+                    <div class="mx-4 mb-6">
+                        <h3 class="font-bold text-lg mb-3">社区活动</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex flex-col items-center justify-center">
+                                        <span class="text-xs text-orange-600 font-medium">12月</span>
+                                        <span class="text-sm font-bold text-orange-600">15</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold mb-1">周末市集</h4>
+                                        <p class="text-sm text-gray-600 mb-2">本地特色商品展销，手工艺品制作体验</p>
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span>9:00-17:00</span>
+                                            <span class="mx-2">·</span>
+                                            <span>文昌广场</span>
+                                        </div>
+                                    </div>
+                                    <button class="text-blue-500 text-sm font-medium">报名</button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex flex-col items-center justify-center">
+                                        <span class="text-xs text-green-600 font-medium">12月</span>
+                                        <span class="text-sm font-bold text-green-600">18</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold mb-1">社区读书会</h4>
+                                        <p class="text-sm text-gray-600 mb-2">本期主题：《南京城市记忆》分享交流</p>
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span>14:00-16:00</span>
+                                            <span class="mx-2">·</span>
+                                            <span>社区图书室</span>
+                                        </div>
+                                    </div>
+                                    <button class="text-blue-500 text-sm font-medium">报名</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 志愿者系统 -->
+                    <div class="mx-4 mb-6">
+                        <h3 class="font-bold text-lg mb-3">我是志愿者</h3>
+                        
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">您的贡献值</h4>
+                                    <p class="text-2xl font-bold text-blue-600">1,280分</p>
+                                    <p class="text-xs text-gray-600">本月排名第8位</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-medal text-white text-xl"></i>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-1">社区达人</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold">周末清洁活动</h4>
+                                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">+50分</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">协助社区环境清理和绿化维护</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">需要5人 | 已报名2人</span>
+                                    <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs">
+                                        我要参与
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold">老人智能手机课堂</h4>
+                                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">+80分</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">教授老年人使用智能手机基础功能</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">需要3人 | 已报名1人</span>
+                                    <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs">
+                                        我要参与
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Page 5: AR导览 -->
+                <div id="ar" class="page">
+                    <div class="ar-viewfinder">
+                        <!-- 扫描区域 -->
+                        <div class="scan-area">
+                            <div class="scan-corners corner-tl"></div>
+                            <div class="scan-corners corner-tr"></div>
+                            <div class="scan-corners corner-bl"></div>
+                            <div class="scan-corners corner-br"></div>
+                            
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center text-white">
+                                    <i class="fas fa-search text-4xl mb-4 opacity-70"></i>
+                                    <p class="text-sm opacity-90">请将摄像头对准历史建筑</p>
+                                    <p class="text-xs opacity-70 mt-2">或地面的AR标识</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AR信息卡片 -->
+                        <div class="ar-info-card">
+                            <div class="flex items-start space-x-3">
+                                <img src="https://images.unsplash.com/photo-1555400082-02136bf57ad4?w=80&h=80&fit=crop" 
+                                     alt="文昌阁" class="w-16 h-16 rounded-lg object-cover">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg">文昌阁</h3>
+                                    <p class="text-sm text-gray-600 mb-2">建于明代，是南京重要的文化地标</p>
+                                    <div class="flex items-center space-x-4">
+                                        <button class="flex items-center space-x-1 text-blue-600">
+                                            <i class="fas fa-play-circle"></i>
+                                            <span class="text-sm">语音讲解</span>
+                                        </button>
+                                        <button class="flex items-center space-x-1 text-gray-600">
+                                            <i class="fas fa-camera"></i>
+                                            <span class="text-sm">拍照分享</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                                <p class="text-xs text-gray-700">
+                                    文昌阁始建于明万历年间，是古代文人墨客聚集之所。阁内供奉文昌帝君，寓意文运昌盛...
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- AR工具栏 -->
+                        <div class="absolute top-4 left-4 right-4 flex justify-between items-center">
+                            <button onclick="showPage('home')" class="bg-black bg-opacity-30 backdrop-filter backdrop-blur-sm text-white rounded-full p-3">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <button class="bg-black bg-opacity-30 backdrop-filter backdrop-blur-sm text-white rounded-full p-3">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                            <button class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm text-white rounded-full p-4">
+                                <i class="fas fa-map text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="showPage('home')">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </div>
+                <div class="nav-item" onclick="showPage('service')">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>街巷地图</span>
+                </div>
+                <div class="nav-item" onclick="showPage('community')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>发布</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showPage(pageId) {
+            // 隐藏所有页面
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // 显示指定页面
+            document.getElementById(pageId).classList.add('active');
+            
+            // 更新导航状态
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // 根据页面设置导航状态
+            if (pageId === 'home') {
+                navItems[0].classList.add('active');
+            } else if (pageId === 'service') {
+                navItems[1].classList.add('active');
+            } else if (pageId === 'community') {
+                navItems[2].classList.add('active');
+            }
+        }
+        
+        // 模拟AR扫描动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const scanArea = document.querySelector('.scan-area');
+            if (scanArea) {
+                setInterval(() => {
+                    scanArea.style.borderColor = scanArea.style.borderColor === 'rgba(0,255,136,0.5)' ? '#00ff88' : 'rgba(0,255,136,0.5)';
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
